@@ -61,6 +61,7 @@
     <div class="dashboard-container">
         <h2>歡迎使用管理系統</h2>
         <div class="function-list">
+            <button onclick="window.location.href='params.html'">系統參數管理</button>
             <button>功能一</button>
             <button>功能二</button>
             <button>功能三</button>
@@ -73,8 +74,22 @@
 
     <script>
         document.getElementById('logoutButton').addEventListener('click', function() {
-            alert('您已登出。');
-            window.location.href = '/'; // 導回登入頁面
+            // 呼叫登出 API
+            fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('您已登出。');
+                window.location.href = '/'; // 導回登入頁面
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('登出時發生錯誤');
+            });
         });
     </script>
 </body>
