@@ -36,7 +36,22 @@
             <p class="toggle-form">已經有帳號？<a href="#" id="showLogin">立即登入</a></p>
         </form>
     </div>
+
     <script>
+        // 切換表單顯示
+        document.getElementById('showRegister').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+
+        document.getElementById('showLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+
+        // 登入表單提交
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -66,7 +81,38 @@
                 alert('登入失敗');
             });
         });
+
+        // 註冊表單提交
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('regUsername').value;
+            const password = document.getElementById('regPassword').value;
+
+            fetch('/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                if (data.message.includes('成功')) {
+                    // 註冊成功後切換到登入表單
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'block';
+                    // 清空登入表單
+                    document.getElementById('username').value = '';
+                    document.getElementById('password').value = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('註冊失敗');
+            });
+        });
     </script>
-    <script src="script.js"></script>
 </body>
 </html> 
