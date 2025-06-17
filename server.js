@@ -42,17 +42,27 @@ const db = new sqlite3.Database('./database.db', (err) => {
         console.error('資料庫連線錯誤:', err.message);
     } else {
         console.log('成功連線到 SQLite 資料庫');
-        // 建立使用者表格 (如果不存在)
-        db.run(`CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            token TEXT
-        )`, (err) => {
+        
+        // 先刪除舊的 users 表格
+        db.run('DROP TABLE IF EXISTS users', (err) => {
             if (err) {
-                console.error('建立使用者表格錯誤:', err.message);
+                console.error('刪除舊表格錯誤:', err.message);
             } else {
-                console.log('使用者表格已準備好');
+                console.log('舊表格已刪除');
+                
+                // 建立新的使用者表格
+                db.run(`CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE NOT NULL,
+                    password TEXT NOT NULL,
+                    token TEXT
+                )`, (err) => {
+                    if (err) {
+                        console.error('建立使用者表格錯誤:', err.message);
+                    } else {
+                        console.log('使用者表格已準備好');
+                    }
+                });
             }
         });
 
