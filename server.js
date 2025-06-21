@@ -410,46 +410,26 @@ app.get('/api/quizzes', authenticateUser, (req, res) => {
     });
 });
 
-// 提交測驗答案
-app.post('/api/quizzes/submit', authenticateUser, (req, res) => {
-    const userAnswers = req.body.answers; // e.g., [{questionId: 1, answer: 'A'}, ...]
+// 即時檢查單一答案
+app.post('/api/quiz/check-answer', authenticateUser, (req, res) => {
+    const { questionId, answer } = req.body;
 
-    if (!userAnswers || !Array.isArray(userAnswers)) {
-        return res.status(400).json({ message: '無效的答案格式' });
+    if (!questionId || !answer) {
+        return res.status(400).json({ message: '缺少題目 ID 或答案' });
     }
 
-    db.all('SELECT id, correct_answer FROM quizzes', [], (err, correctAnswers) => {
+    db.get('SELECT correct_answer FROM quizzes WHERE id = ?', [questionId], (err, row) => {
         if (err) {
-            return res.status(500).json({ message: '無法獲取答案', error: err.message });
+            return res.status(500).json({ message: '資料庫查詢錯誤', error: err.message });
+        }
+        if (!row) {
+            return res.status(404).json({ message: '找不到該題目' });
         }
 
-        let score = 0;
-        const results = [];
-        const correctAnswerMap = {};
-        correctAnswers.forEach(ans => {
-            correctAnswerMap[ans.id] = ans.correct_answer;
-        });
-
-        userAnswers.forEach(userAnswer => {
-            const questionId = userAnswer.questionId;
-            const isCorrect = correctAnswerMap[questionId] === userAnswer.answer;
-            if (isCorrect) {
-                score++;
-            }
-            results.push({
-                questionId: questionId,
-                userAnswer: userAnswer.answer,
-                correctAnswer: correctAnswerMap[questionId],
-                isCorrect: isCorrect
-            });
-        });
-
-        const totalQuestions = correctAnswers.length;
+        const isCorrect = row.correct_answer === answer;
         res.json({
-            message: '測驗完成',
-            score: score,
-            totalQuestions: totalQuestions,
-            results: results
+            isCorrect: isCorrect,
+            correctAnswer: row.correct_answer
         });
     });
 });
