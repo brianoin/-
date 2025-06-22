@@ -17,7 +17,18 @@ const db = new sqlite3.Database('./database.db', (err) => {
         console.error('資料庫連線錯誤:', err.message);
     } else {
         console.log('成功連線到 SQLite 資料庫');
-        // 只建立系統參數與功能表，不再建立 users 表
+        // 建立 users 表
+        db.run(`CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )`, (err) => {
+            if (err) {
+                console.error('建立使用者表格錯誤:', err.message);
+            } else {
+                console.log('使用者表格已準備好');
+            }
+        });
         // 建立系統參數資料表
         db.run(`CREATE TABLE IF NOT EXISTS sys_parainfo (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -195,6 +206,61 @@ app.post('/api/quiz/check-answer', (req, res) => {
         res.json({
             isCorrect: isCorrect,
             correctAnswer: row.correct_answer
+        });
+    });
+});
+
+// 使用者註冊 API
+app.post('/api/register', (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ message: '請提供使用者名稱和密碼' });
+    }
+
+    db.get('SELECT * FROM users WHERE username = ?', [username], (err, row) => {
+        if (err) {
+            return res.status(500).json({ message: '資料庫查詢錯誤', error: err.message });
+        }
+        if (row) {
+            return res.status(400).json({ message: '使用者名稱已被註冊' });
+        }
+
+        bcrypt.hash(password, 10, (err, hash) => {
+            if (err) {
+                return res.status(500).json({ message: '密碼雜湊錯誤', error: err.message });
+            }
+
+            db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, hash], function(err) {
+                if (err) {
+                    return res.status(500).json({ message: '註冊失敗', error: err.message });
+                }
+                res.status(201).json({ message: '註冊成功', userId: this.lastID });
+            });
+        });
+    });
+});
+
+// 使用者登入 API
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ message: '請提供使用者名稱和密碼' });
+    }
+
+    db.get('SELECT * FROM users WHERE username = ?', [username], (err, user) => {
+        if (err) {
+            return res.status(500).json({ message: '資料庫錯誤', error: err.message });
+        }
+        if (!user) {
+            return res.status(401).json({ message: '使用者不存在或密碼錯誤' });
+        }
+
+        bcrypt.compare(password, user.password, (err, result) => {
+            if (result) {
+                res.json({ message: '登入成功', username: user.username });
+            } else {
+                res.status(401).json({ message: '使用者不存在或密碼錯誤' });
+            }
         });
     });
 });
