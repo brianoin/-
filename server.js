@@ -158,11 +158,9 @@ function seedQuizData() {
         ];
 
         // 使用 transaction 確保資料一致性
-        db.run('BEGIN TRANSACTION');
         db.run('DELETE FROM quizzes WHERE subject = ?', [subjectBM], function(err) {
             if (err) {
                 console.error('刪除舊基礎醫學題目失敗:', err.message);
-                db.run('ROLLBACK');
                 return;
             }
             console.log(`已清除舊的 '${subjectBM}' 題目`);
@@ -174,9 +172,7 @@ function seedQuizData() {
             stmt.finalize(err => {
                 if (err) {
                     console.error('插入基礎醫學題目失敗:', err.message);
-                    db.run('ROLLBACK');
                 } else {
-                    db.run('COMMIT');
                     console.log(`已成功插入 ${quizzesBM.length} 題 '${subjectBM}' 題目`);
                 }
             });
@@ -237,11 +233,9 @@ function seedQuizData() {
             { q: '因醫療處置結果不如預期而產生之醫療糾紛的處理原則， 下列何者應優先？', o: ['請醫院院長應立即出面道歉', '收集發生醫療不良結果之前例', '勇敢出來誠實面對病人或家屬', '說明任何醫療行為均可能有風險'], a: 'C' }
         ];
 
-        db.run('BEGIN TRANSACTION');
         db.run('DELETE FROM quizzes WHERE subject = ?', [subjectBN], function(err) {
             if (err) {
                 console.error('刪除舊基本護理學題目失敗:', err.message);
-                db.run('ROLLBACK');
                 return;
             }
             console.log(`已清除舊的 '${subjectBN}' 題目`);
@@ -253,9 +247,7 @@ function seedQuizData() {
             stmt.finalize(err => {
                 if (err) {
                     console.error('插入基本護理學題目失敗:', err.message);
-                    db.run('ROLLBACK');
                 } else {
-                    db.run('COMMIT');
                     console.log(`已成功插入 ${quizzesBN.length} 題 '${subjectBN}' 題目`);
                 }
             });
@@ -316,11 +308,9 @@ function seedQuizData() {
             { q: '有關登革熱的敘述， 下列何者正確？', o: ['臉部出現不痛不癢的紅斑', '病毒從呼吸道檢體分離是確診的主要依據', '為第三類法定傳染病', '馬鞍狀發燒， 發燒3天後體溫下降1～ 2天後， 又再度發燒'], a: 'D' }
         ];
 
-        db.run('BEGIN TRANSACTION');
         db.run('DELETE FROM quizzes WHERE subject = ?', [subjectMS], function(err) {
             if (err) {
                 console.error('刪除舊內外科護理學題目失敗:', err.message);
-                db.run('ROLLBACK');
                 return;
             }
             console.log(`已清除舊的 '${subjectMS}' 題目`);
@@ -332,9 +322,7 @@ function seedQuizData() {
             stmt.finalize(err => {
                 if (err) {
                     console.error('插入內外科護理學題目失敗:', err.message);
-                    db.run('ROLLBACK');
                 } else {
-                    db.run('COMMIT');
                     console.log(`已成功插入 ${quizzesMS.length} 題 '${subjectMS}' 題目`);
                 }
             });
@@ -418,11 +406,9 @@ function seedQuizData() {
             { q: '小美， 15個月大， 從樓梯跌落導致頭部受傷， 急診護理師依據兒童適用之葛氏昏迷量表（ Glasgow coma scale, GCS） 評估其意識程度， 結果顯示叫他時會睜眼， 雖會哭泣但可安撫， 輕觸其手臂會收縮反應， 請問小美的昏迷指數為幾分？', o: ['7分', '9分', '12分', '15分'], a: 'C' }
         ];
 
-        db.run('BEGIN TRANSACTION');
         db.run('DELETE FROM quizzes WHERE subject = ?', [subjectOB], function(err) {
             if (err) {
                 console.error('刪除舊產兒科護理學題目失敗:', err.message);
-                db.run('ROLLBACK');
                 return;
             }
             console.log(`已清除舊的 '${subjectOB}' 題目`);
@@ -434,9 +420,7 @@ function seedQuizData() {
             stmt.finalize(err => {
                 if (err) {
                     console.error('插入產兒科護理學題目失敗:', err.message);
-                    db.run('ROLLBACK');
                 } else {
-                    db.run('COMMIT');
                     console.log(`已成功插入 ${quizzesOB.length} 題 '${subjectOB}' 題目`);
                 }
             });
@@ -497,11 +481,9 @@ function seedQuizData() {
             { q: '有關氣喘之護理指導， 下列何項最不適當？', o: ['以百葉⑤替代布⑤簾', '避免情緒起伏太大', '進行高強度運動， 以增加肺活量', '遵從醫囑按時用藥， 不可自行停藥'], a: 'C' }
         ];
 
-        db.run('BEGIN TRANSACTION');
         db.run('DELETE FROM quizzes WHERE subject = ?', [subjectPS], function(err) {
             if (err) {
                 console.error('刪除舊精神科與社區衛生護理學題目失敗:', err.message);
-                db.run('ROLLBACK');
                 return;
             }
             console.log(`已清除舊的 '${subjectPS}' 題目`);
@@ -513,9 +495,7 @@ function seedQuizData() {
             stmt.finalize(err => {
                 if (err) {
                     console.error('插入精神科與社區衛生護理學題目失敗:', err.message);
-                    db.run('ROLLBACK');
                 } else {
-                    db.run('COMMIT');
                     console.log(`已成功插入 ${quizzesPS.length} 題 '${subjectPS}' 題目`);
                 }
             });
